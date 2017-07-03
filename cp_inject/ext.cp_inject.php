@@ -125,10 +125,8 @@ class Cp_inject_ext
         // if applicable
         $css = ee()->extensions->last_call ?: '';
 
-        var_dump($css);
-        die;
-
-        return $css;
+        // Get the CSS contents, add it to the CSS, and return it
+        return $css . $this->getContentsFromConfig('css');
     }
 
     /**
@@ -140,9 +138,74 @@ class Cp_inject_ext
         // if applicable
         $js = ee()->extensions->last_call ?: '';
 
-        var_dump($js);
-        die;
+        // Get the JS contents, add it to the JS, and return it
+        return $js . $this->getContentsFromConfig('js');
+    }
 
-        return $js;
+    /**
+     * Get file contents from config arrays
+     * @param string $type
+     * @return string
+     */
+    private function getContentsFromConfig($type)
+    {
+        // Set up some paths
+        $paths = array(
+            'noPath' => '',
+            'publicPath' => rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/',
+            'userPath' => rtrim(SYSPATH, '/') . '/user/',
+            'pathThirdThemes' => rtrim(PATH_THIRD_THEMES, '/') . '/',
+            'sysPath' => rtrim(SYSPATH, '/') . '/',
+            'pathThird' => rtrim(PATH_THIRD, '/') . '/',
+        );
+
+        // Get the config class
+        /** @var \EE_Config $configClass */
+        $configClass = ee()->config;
+
+        // Get the config
+        $config = $configClass->item($type, 'cp_inject');
+
+        // If no config, return an empty string
+        if (! $config) {
+            return '';
+        }
+
+        // Check if config is string and convert it to array
+        if (is_string($config)) {
+            $config = [$config];
+        }
+
+        // If the config is not an array, return
+        if (! is_array($config)) {
+            return '';
+        }
+
+        // Start contents variable
+        $contents = '';
+
+        // Iterate through items in config
+        /** @var array $config */
+        foreach ($config as $item) {
+            // Iterate through paths and check for a match
+            foreach ($paths as $path) {
+                // Get this path
+                $thisPath = "{$path}{$item}";
+
+                // If the path is not a file or not readable, continue to next
+                if (! is_file($thisPath) || ! is_readable($thisPath)) {
+                    continue;
+                }
+
+                // Get the file contents
+                $contents .= file_get_contents($thisPath);
+
+                // End path processing
+                break;
+            }
+        }
+
+        // Return the contents
+        return $contents;
     }
 }
