@@ -1,0 +1,13 @@
+{
+	"author": "TJ Draper",
+	"authorUrl": "https://buzzingpixel.com",
+	"bugs": "https://github.com/buzzingpixel/cp-inject-ee/issues",
+	"description": "Inject custom CSS and JS into the the control panel",
+	"docsUrl": "https://github.com/buzzingpixel/cp-inject-ee",
+	"homepage": "https://github.com/buzzingpixel/cp-inject-ee",
+	"label": "CP Inject",
+	"name": "cp_inject",
+	"namespace": "BuzzingPixel\\CpInject",
+	"settingsExist": false,
+	"version": "1.0.0"
+}
